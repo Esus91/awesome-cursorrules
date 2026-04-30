@@ -260,7 +260,8 @@ Contributions are welcome! If you have a great `.cursorrules` file to share:
 4. Optionally, include a README.md in the folder to provide credit and a brief description.
 5. Update the main README.md file, adding your contribution to the appropriate category.
 6. Ensure your contribution follows the guidelines in the [`.cursorrules`](./.cursorrules) file at the root of this repository.
-7. Submit a pull request.
+7. Run `python scripts/check_readme_links.py` to verify that all README links are valid.
+8. Submit a pull request.
 
 Please ensure your contribution is original or properly credited if based on existing work. Refer to the `.cursorrules` file in the root of this repository for detailed guidelines on formatting, naming conventions, and best practices for contributions.
 
