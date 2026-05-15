@@ -1,41 +1,35 @@
-# Robinhood Connection (Read-Only)
+# Robinhood Connection (Read-Only, Supabase)
 
 ## Goal
-Enable users to connect Robinhood accounts and view balances/holdings/transactions **without any ability to trade or edit brokerage data**.
+Enable users to connect Robinhood accounts and view balances/holdings/transactions **without any ability to trade or edit brokerage fields**.
+
+## Recommended integration path
+Because direct Robinhood developer access can vary, use a brokerage aggregation provider (for example Plaid Investments) and route all sync through secure server-side workers.
 
 ## Architecture pattern
-1. User authenticates through a broker aggregation partner or direct OAuth flow (if available in your Robinhood access channel).
-2. App stores encrypted access/refresh tokens in `broker_connections`.
-3. A sync worker reads brokerage endpoints and writes snapshots only:
+1. User signs in with Supabase Auth.
+2. Client starts `/api/v6/brokers/robinhood/connect` handshake.
+3. Edge Function exchanges the provider token and persists encrypted credentials in `broker_connections`.
+4. Scheduled sync worker pulls account data and writes **snapshots only**:
    - `holdings_snapshot`
    - `transactions_snapshot`
-4. UI only reads snapshot tables.
+5. Client queries read-only rows through RLS-protected tables/views.
 
 ## Non-negotiable controls
-- `broker_connections.read_only` must remain `true`.
-- Never store trade endpoints in client-accessible config.
-- API routes expose only `GET` methods for brokerage resources.
-- Service policy denies HTTP methods `POST/PUT/PATCH/DELETE` to any trade/order path.
+- `broker_connections.read_only` must stay `true`.
+- No client credentials for any brokerage provider.
+- No order/trade routes in your API surface.
+- Only service-role jobs may write snapshot tables.
+- Authenticated users get `SELECT` access only to their own data through RLS.
 
-## Suggested API endpoints (server-side)
+## Suggested API surface
+- `POST /api/v6/brokers/robinhood/connect` (handshake only)
 - `GET /api/v6/brokers`
-- `POST /api/v6/brokers/robinhood/connect` (connect handshake only)
 - `GET /api/v6/portfolio/holdings?asOf=YYYY-MM-DD`
 - `GET /api/v6/portfolio/transactions?from=YYYY-MM-DD&to=YYYY-MM-DD`
 - `GET /api/v6/portfolio/performance`
 
-## Token handling
-- Encrypt tokens with a KMS-backed key.
-- Rotate keys quarterly.
-- Mark connection `status='error'` when token refresh fails.
-- Track sync attempts in `sync_jobs`.
-
-## Data flow
-- Full sync on initial connect.
-- Incremental sync every 15-60 minutes for brokerage transactions.
-- Daily reconciliation against account equity/positions.
-
-## What “view-only” means in practice
-- Your database is treated as a projection cache of brokerage state.
-- Users cannot mutate imported rows from the UI.
-- Manual corrections require admin-only out-of-band tooling + audit events.
+## Operational guidance
+- Incremental sync every 15-60 minutes.
+- Daily position/equity reconciliation.
+- On token refresh failure: set `status='error'`, log `sync_jobs`, notify user.

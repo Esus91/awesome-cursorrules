@@ -35,3 +35,10 @@ Reference: https://www.sec.gov/developer
 - Join holdings symbols -> issuer CIK mapping.
 - Show latest filing date and form alongside each holding.
 - Compute simple valuation overlays using selected `sec_facts` tags.
+
+
+## Supabase execution model
+- Use a scheduled Supabase Edge Function for each ingestion job.
+- Use service-role credentials only inside Edge Functions (never in browser code).
+- Upsert into `sec_companies`, `sec_filings`, and `sec_facts` using idempotent keys.
+- Record each run in `sync_jobs` with source='edgar'.
