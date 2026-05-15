@@ -26,3 +26,7 @@ This package provides a **Supabase-first** foundation:
 - Do not implement order placement endpoints.
 - Keep client access read-only to snapshot and SEC views.
 - Log sync/user access events in `audit_events`.
+
+
+## Viewer app
+A minimal read-only UI is included at `apps/atrium-v6-viewer/` for Supabase-backed browsing of brokerage snapshots and EDGAR datasets.

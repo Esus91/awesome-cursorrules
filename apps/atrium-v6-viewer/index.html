@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Atrium Balance Capital Unified v6 Viewer</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Atrium Balance Capital Unified v6</h1>
+      <p>Read-only portfolio + SEC EDGAR viewer (Supabase-backed)</p>
+    </header>
+
+    <main>
+      <section class="card">
+        <h2>Supabase Connection</h2>
+        <form id="config-form">
+          <label>Supabase URL <input id="supabase-url" required placeholder="https://PROJECT.supabase.co" /></label>
+          <label>Anon Key <input id="supabase-key" required placeholder="ey..." /></label>
+          <label>User JWT (for RLS) <input id="supabase-jwt" required placeholder="Paste access token from Supabase Auth" /></label>
+          <button type="submit">Connect</button>
+        </form>
+        <p id="status">Not connected.</p>
+      </section>
+
+      <section class="grid">
+        <article class="card">
+          <h2>Broker Connections</h2>
+          <button data-load="brokers">Load</button>
+          <pre id="brokers"></pre>
+        </article>
+        <article class="card">
+          <h2>Holdings</h2>
+          <button data-load="holdings">Load</button>
+          <pre id="holdings"></pre>
+        </article>
+        <article class="card">
+          <h2>Transactions</h2>
+          <button data-load="transactions">Load</button>
+          <pre id="transactions"></pre>
+        </article>
+        <article class="card">
+          <h2>SEC Filings</h2>
+          <button data-load="filings">Load</button>
+          <pre id="filings"></pre>
+        </article>
+        <article class="card">
+          <h2>SEC Facts</h2>
+          <button data-load="facts">Load</button>
+          <pre id="facts"></pre>
+        </article>
+        <article class="card">
+          <h2>Audit Events</h2>
+          <button data-load="audit">Load</button>
+          <pre id="audit"></pre>
+        </article>
+      </section>
+    </main>
+
+    <script src="./app.js" type="module"></script>
+  </body>
+</html>
